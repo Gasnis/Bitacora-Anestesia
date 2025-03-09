@@ -1,23 +1,29 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import { Route, Routes, Navigate, BrowserRouter as Router } from 'react-router-dom';
+import Home from './components/Home';
+import Login from './components/Login';
 import './App.css';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    // Leer el estado de autenticación desde el localStorage
+    const savedAuth = localStorage.getItem('isAuthenticated');
+    return savedAuth === 'true';
+  });
+
+  useEffect(() => {
+    // Guardar el estado de autenticación en el localStorage
+    localStorage.setItem('isAuthenticated', isAuthenticated);
+  }, [isAuthenticated]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Router>
+        <Routes>
+          <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/login" />} />
+          <Route path="/login" element={<Login onLogin={setIsAuthenticated} />} />
+        </Routes>
+      </Router>
     </div>
   );
 }
