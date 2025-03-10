@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Form, Container, Row, Col, Alert } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import ListOps from "./listOps";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -7,6 +8,7 @@ import { addOp, getOps, deleteOp } from "../services/index";
 import "./home.css"
 
 const OpsLayout = ({ name }) => {
+    const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedOp, setSelectedOp] = useState(null);
@@ -30,8 +32,10 @@ const OpsLayout = ({ name }) => {
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
-        loadOps();
-    }, []);
+        if (name) {
+            loadOps();
+        }
+    }, [name]);
 
     const loadOps = async () => {
         try {
@@ -122,6 +126,21 @@ const OpsLayout = ({ name }) => {
 
     // Filtrar las operaciones por DNI y nombre del usuario
     const filteredOps = ops.filter(op => op.dniPaciente.includes(searchDni) && op.nombre === name);
+
+    if (!name) {
+        return (
+            <Container fluid>
+                <header className="text-center my-4">
+                    <h1>Bitácora</h1>
+                </header>
+                <Row className="mb-3 justify-content-center">
+                    <Col xs="auto">
+                        <Button onClick={() => navigate('/login')}>Login</Button>
+                    </Col>
+                </Row>
+            </Container>
+        );
+    }
 
     return (
         <Container fluid>
