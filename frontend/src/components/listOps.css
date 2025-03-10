@@ -1,4 +1,9 @@
-.table{
+.containerOps{
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+}
+.table {
     width: 100%;
     border-collapse: collapse;
     margin: 0;
@@ -10,5 +15,73 @@
     border: 1px solid #f2f5f9;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
-    
 }
+
+.table th,
+.table td {
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.table th {
+    background-color: #f2f5f9;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid #f2f5f9;
+}
+
+.table tbody tr:nth-of-type(even) {
+    background-color: #f9f9f9;
+}
+
+.table tbody tr:last-of-type {
+    border-bottom: 2px solid #f2f5f9;
+}
+
+@media (max-width: 768px) {
+    .table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .table thead,
+    .table tbody,
+    .table th,
+    .table td,
+    .table tr {
+        display: block;
+    }
+
+    .table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .table tr {
+        border: 1px solid #ccc;
+    }
+
+    .table td {
+        border: none;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: 50%;
+        text-align: left;
+    }
+
+    .table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+}
+
+
+

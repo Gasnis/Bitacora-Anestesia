@@ -7,7 +7,7 @@ function listOps({ ops, isLoading, onDelete }) {
   const sortedOps = ops.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 
   return (
-    <Container>
+    <Container className="containerOps">
       {isLoading ? (
         <div className="d-flex justify-content-center">
           <Spinner animation="border" role="status">
