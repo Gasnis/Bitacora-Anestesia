@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Form, Container, Row, Col } from "react-bootstrap";
+import { Button, Modal, Form, Container, Row, Col, Alert } from "react-bootstrap";
 import ListOps from "./listOps";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { addOp, getOps, deleteOp } from "../services/index";
 import "./home.css"
 
-const OpsLayout = () => {
+const OpsLayout = ({ name }) => {
     const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedOp, setSelectedOp] = useState(null);
     const [formData, setFormData] = useState({
-        hospital: "DR. ENRIQUE VERA BARROS",
-        nombre: "Ana Lia Saravia",
+        hospital: "",
+        nombre: name || "",
         areaDeTrabajo: "Residencia de Anestesiologia",
         fecha: "",
         cirugia: "",
@@ -27,6 +27,7 @@ const OpsLayout = () => {
     const [ops, setOps] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchDni, setSearchDni] = useState('');
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         loadOps();
@@ -44,7 +45,10 @@ const OpsLayout = () => {
         }
     };
 
-    const handleShow = () => setShowModal(true);
+    const handleShow = () => {
+        setFormData({ ...formData, nombre: name });
+        setShowModal(true);
+    };
     const handleClose = () => setShowModal(false);
 
     const handleDeleteShow = (op) => {
@@ -58,8 +62,30 @@ const OpsLayout = () => {
         setFormData({ ...formData, [name]: value });
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+        if (!formData.hospital) newErrors.hospital = "El hospital es requerido";
+        if (!formData.nombre) newErrors.nombre = "El nombre es requerido";
+        if (!formData.areaDeTrabajo) newErrors.areaDeTrabajo = "El área de trabajo es requerida";
+        if (!formData.fecha) newErrors.fecha = "La fecha es requerida";
+        if (!formData.cirugia) newErrors.cirugia = "La cirugía es requerida";
+        if (!formData.anestesia) newErrors.anestesia = "La anestesia es requerida";
+        if (!formData.rol) newErrors.rol = "El rol es requerido";
+        if (!formData.nombrePaciente) newErrors.nombrePaciente = "El nombre del paciente es requerido";
+        if (!formData.edadPaciente) newErrors.edadPaciente = "La edad del paciente es requerida";
+        if (!formData.nombreCirujano) newErrors.nombreCirujano = "El nombre del cirujano es requerido";
+        if (!formData.dniPaciente) newErrors.dniPaciente = "El DNI del paciente es requerido";
+        if (!formData.obraSocial) newErrors.obraSocial = "La obra social es requerida";
+        return newErrors;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const formErrors = validateForm();
+        if (Object.keys(formErrors).length > 0) {
+            setErrors(formErrors);
+            return;
+        }
         try {
             await addOp(formData);
             handleClose();
@@ -94,13 +120,14 @@ const OpsLayout = () => {
         });
     };
 
-    // Filtrar las operaciones por DNI
-    const filteredOps = ops.filter(op => op.dniPaciente.includes(searchDni));
+    // Filtrar las operaciones por DNI y nombre del usuario
+    const filteredOps = ops.filter(op => op.dniPaciente.includes(searchDni) && op.nombre === name);
 
     return (
         <Container fluid>
             <header className="text-center my-4">
                 <h1>Bitácora</h1>
+                <h2>Bienvenido {name}</h2>
             </header>
 
             <Row className="mb-3 justify-content-center">
@@ -134,9 +161,17 @@ const OpsLayout = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={handleSubmit}>
+                        {Object.keys(errors).length > 0 && (
+                            <Alert variant="danger">
+                                {Object.values(errors).map((error, index) => (
+                                    <div key={index}>{error}</div>
+                                ))}
+                            </Alert>
+                        )}
                         <Form.Group controlId="formHospital">
                             <Form.Label>Hospital</Form.Label>
                             <Form.Control as="select" name="hospital" value={formData.hospital} onChange={handleChange}>
+                                <option value="">Seleccione un hospital</option>
                                 <option>DR. ENRIQUE VERA BARROS</option>
                             </Form.Control>
                         </Form.Group>
@@ -144,6 +179,7 @@ const OpsLayout = () => {
                         <Form.Group controlId="formAreaTrabajo">
                             <Form.Label>Área de Trabajo</Form.Label>
                             <Form.Control as="select" name="areaDeTrabajo" value={formData.areaDeTrabajo} onChange={handleChange}>
+                                <option value="">Seleccione un área de trabajo</option>
                                 <option>Residencia de Anestesiologia</option>
                             </Form.Control>
                         </Form.Group>
@@ -178,7 +214,11 @@ const OpsLayout = () => {
                             <Form.Control type="number" name="edadPaciente" value={formData.edadPaciente} onChange={handleChange} />
                         </Form.Group>
 
-                        
+                        <Form.Group controlId="formNombreCirujano">
+                            <Form.Label>Nombre del Cirujano</Form.Label>
+                            <Form.Control type="text" name="nombreCirujano" value={formData.nombreCirujano} onChange={handleChange} />
+                        </Form.Group>
+
                         <Form.Group controlId="formDniPaciente">
                             <Form.Label>DNI del Paciente</Form.Label>
                             <Form.Control type="text" name="dniPaciente" value={formData.dniPaciente} onChange={handleChange} />

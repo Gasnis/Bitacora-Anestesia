@@ -10,18 +10,24 @@ function App() {
     const savedAuth = localStorage.getItem('isAuthenticated');
     return savedAuth === 'true';
   });
+  const [name, setName] = useState('');
 
   useEffect(() => {
     // Guardar el estado de autenticación en el localStorage
     localStorage.setItem('isAuthenticated', isAuthenticated);
   }, [isAuthenticated]);
 
+  const handleLogin = (isAuth, user) => {
+    setIsAuthenticated(isAuth);
+    setName(user);
+  };
+
   return (
     <div className="App">
       <Router>
         <Routes>
-          <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/login" />} />
-          <Route path="/login" element={<Login onLogin={setIsAuthenticated} />} />
+          <Route path="/" element={isAuthenticated ? <Home name={name} /> : <Navigate to="/login" />} />
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
         </Routes>
       </Router>
     </div>

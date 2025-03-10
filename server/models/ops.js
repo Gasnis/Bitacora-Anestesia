@@ -13,7 +13,7 @@ const OpsSchema = new Schema({
 	},
 	nombre: {
 		type: String,
-		default: "Ana Lia Saravia",
+		required: true,
 	},
 	fecha: {
 		type: String,

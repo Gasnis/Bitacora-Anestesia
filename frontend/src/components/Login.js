@@ -1,20 +1,31 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getUsers } from '../services/index';
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate(); // Hook para redireccionar
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simple authentication logic
-    if (username === 'user' && password === 'pass') {
-      onLogin(true);
-      navigate('/'); // Redirige al usuario a Home después del login
-    } else {
-      alert('Invalid credentials');
+    try {
+      const response = await getUsers();
+      const users = response.data;
+
+      // Verificar si las credenciales coinciden con algún usuario
+      const user = users.find(user => user.username === username && user.password === password);
+
+      if (user) {
+        onLogin(true, user.name);
+        navigate('/'); // Redirige al usuario a Home después del login
+      } else {
+        alert('Invalid credentials');
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      alert('Error during login. Please try again.');
     }
   };
 

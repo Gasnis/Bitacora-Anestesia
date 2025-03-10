@@ -36,4 +36,16 @@ const deleteOp = async (id) => {
     }
 }
 
-export { getOps, addOp, deleteOp };
+const getUsers = async () => {
+    try {
+        const users = await axios.get(`${baseURL}/users`);
+        console.log("Users:", users.data);
+        return users;
+
+    } catch (error) {
+        console.error("Error getting users:", error);
+    }
+}
+
+
+export { getOps, addOp, deleteOp , getUsers};

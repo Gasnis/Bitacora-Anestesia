@@ -1,4 +1,5 @@
 const Ops = require("../models/ops");
+
 const mongoose = require("mongoose");
 
 async function addOp(req, res) {
@@ -56,14 +57,9 @@ async function getOps(req, res) {
 async function deleteOp(req, res) {
 	try {
 		const { id } = req.params;
-		console.log("ID recibido:", id); // 👈 Verifica si el ID llega correctamente
 
-		if (!id) {
-			return res.status(400).send("ID no proporcionado");
-		}
-
-		if (!mongoose.Types.ObjectId.isValid(id)) {
-			return res.status(400).send("ID no válido");
+		if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).send("ID no proporcionado o no válido");
 		}
 
 		const deletedOp = await Ops.findByIdAndDelete(id);
@@ -71,13 +67,13 @@ async function deleteOp(req, res) {
 			return res.status(404).send("Operación no encontrada");
 		}
 
-		console.log("Operación eliminada:", deletedOp);
 		res.status(200).send(deletedOp);
 	} catch (error) {
-		console.error("Error en DELETE:", error);
 		res.status(500).send(error.message);
 	}
 }
+
+
 module.exports = {
 	addOp,
 	getOps,
