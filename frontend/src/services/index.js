@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'https://bitacora-anestesia-production.up.railway.app/';
+const baseURL = 'https://bitacora-anestesia-production.up.railway.app';
 
 const getOps = async () => {
     try {
